@@ -1,8 +1,21 @@
 #include <stdio.h>
 
-int main() {
+int main(void)
+{
+    char command[100];
 
-    printf("MiniShell started!\n");
+    printf("==============================\n");
+    printf("          MiniShell\n");
+    printf("==============================\n");
+
+    while (1)
+    {
+        printf("MiniShell$ ");
+
+        fgets(command, 100, stdin);
+
+        printf("You entered: %s", command);
+    }
 
     return 0;
 }
