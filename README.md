@@ -1,43 +1,53 @@
 # MiniShell
 
-A simple Unix-like command shell built from scratch in C.
+## 1. Project Description
 
-## Project Description
+MiniShell is a simple Unix-like command shell developed in C.
 
-MiniShell is a small command-line shell developed in C to understand how a shell works internally and how Linux processes and system calls are used to execute commands.
+The project aims to understand how a shell reads user commands, processes them, and executes programs in a Linux environment.
 
-## Problem Statement
+## 2. Problem Statement
 
-When users run commands in a Linux terminal, the shell reads user input, interprets commands, and executes programs.
+When a user enters a command in a terminal, the shell performs several operations such as reading the input, parsing the command, creating processes, executing programs, and handling input/output.
 
-The goal of MiniShell is to build a simplified shell from scratch and understand the basic mechanisms involved in command execution.
+MiniShell implements these basic operations from scratch in C to understand how a command shell works internally.
 
-## Goals
+## 3. Goals
 
-- Understand how a shell works internally.
-- Learn how user input is read and parsed.
-- Understand Linux process creation and program execution.
-- Practice C programming through a system-level project.
-- Understand basic input/output redirection.
-- Build a small and modular shell.
+- Understand the basic working of a Unix shell.
+- Learn how commands are read and parsed.
+- Understand process creation and program execution.
+- Learn how Linux system calls are used.
+- Understand file descriptors and output redirection.
+- Practice system-level programming in C.
 
-## Planned Features
+## 4. Specifications
+
+MiniShell will provide:
 
 - Interactive command prompt
 - Command parsing
-- Built-in commands such as `cd`, `pwd`, `echo`, and `cat`
-- Execute external Linux commands
+- `cd` command
+- `pwd` command
+- `echo` command
+- `cat` command
+- External command execution
 - Basic error handling
 - Output redirection using `>`
 
-## Project Structure
+## 5. Design
+
+The shell follows this basic flow:
 
 ```text
-MiniShell/
-├── src/
-│   └── main.c
-├── include/
-├── tests/
-├── .gitignore
-├── Makefile
-└── README.md
+User Input
+    ↓
+Read Command
+    ↓
+Parse Command
+    ↓
+Check Command
+    ↓
+Execute
+    ↓
+Display Output

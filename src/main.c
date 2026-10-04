@@ -1,8 +1,101 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#define MAX_INPUT 100
+#define MAX_ARGS 10
+
+void parse_command(char *input, char *args[])
+{
+    int count = 0;
+
+    char *token = strtok(input, " ");
+
+    while (token != NULL && count < MAX_ARGS - 1)
+    {
+        args[count] = token;
+        count++;
+
+        token = strtok(NULL, " ");
+    }
+
+    args[count] = NULL;
+}
+
+void handle_cd(char *args[])
+{
+    if (args[1] == NULL)
+    {
+        char *home = getenv("HOME");
+
+        if (home == NULL)
+        {
+            printf("MiniShell: HOME directory not found\n");
+            return;
+        }
+
+        if (chdir(home) != 0)
+            perror("MiniShell");
+
+        return;
+    }
+
+    if (chdir(args[1]) != 0)
+        perror("MiniShell");
+}
+
+void handle_pwd(void)
+{
+    char current_directory[MAX_INPUT];
+
+    if (getcwd(current_directory, sizeof(current_directory)) != NULL)
+        printf("%s\n", current_directory);
+    else
+        perror("MiniShell");
+}
+
+void handle_echo(char *args[])
+{
+    for (int i = 1; args[i] != NULL; i++)
+    {
+        printf("%s", args[i]);
+
+        if (args[i + 1] != NULL)
+            printf(" ");
+    }
+
+    printf("\n");
+}
+
+void handle_cat(char *args[])
+{
+    if (args[1] == NULL)
+    {
+        printf("MiniShell: cat requires a file\n");
+        return;
+    }
+
+    FILE *file = fopen(args[1], "r");
+
+    if (file == NULL)
+    {
+        perror("MiniShell");
+        return;
+    }
+
+    char line[100];
+
+    while (fgets(line, sizeof(line), file) != NULL)
+        printf("%s", line);
+
+    fclose(file);
+}
 
 int main(void)
 {
-    char command[100];
+    char input[MAX_INPUT];
+    char *args[MAX_ARGS];
 
     printf("==============================\n");
     printf("          MiniShell\n");
@@ -12,9 +105,36 @@ int main(void)
     {
         printf("MiniShell$ ");
 
-        fgets(command, 100, stdin);
+        if (fgets(input, sizeof(input), stdin) == NULL)
+            break;
 
-        printf("You entered: %s", command);
+        input[strcspn(input, "\n")] = '\0';
+
+        parse_command(input, args);
+
+        if (args[0] == NULL)
+            continue;
+
+        if (strcmp(args[0], "cd") == 0)
+        {
+            handle_cd(args);
+        }
+        else if (strcmp(args[0], "pwd") == 0)
+        {
+            handle_pwd();
+        }
+        else if (strcmp(args[0], "echo") == 0)
+        {
+            handle_echo(args);
+        }
+        else if (strcmp(args[0], "cat") == 0)
+        {
+            handle_cat(args);
+        }
+        else
+        {
+            printf("MiniShell: command not implemented yet\n");
+        }
     }
 
     return 0;
