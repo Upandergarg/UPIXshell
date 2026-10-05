@@ -92,6 +92,27 @@ void handle_cat(char *args[])
     fclose(file);
 }
 
+void execute_external(char *args[])
+{
+    pid_t pid = fork();
+
+    if (pid < 0)
+    {
+        perror("MiniShell");
+        return;
+    }
+
+    if (pid == 0)
+    {
+        execvp(args[0], args);
+
+        perror("MiniShell");
+        return;
+    }
+
+    wait(NULL);
+}
+
 int main(void)
 {
     char input[MAX_INPUT];
@@ -133,7 +154,7 @@ int main(void)
         }
         else
         {
-            printf("MiniShell: command not implemented yet\n");
+            execute_external(args);
         }
     }
 
