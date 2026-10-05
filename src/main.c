@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <sys/wait.h>
 #define MAX_INPUT 100
 #define MAX_ARGS 10
 
@@ -107,10 +107,13 @@ void execute_external(char *args[])
         execvp(args[0], args);
 
         perror("MiniShell");
-        return;
+        _exit(1);
     }
 
-    wait(NULL);
+      if (wait(NULL) == -1)
+    {
+        perror("MiniShell");
+    }
 }
 
 int main(void)
