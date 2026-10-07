@@ -229,6 +229,65 @@ void execute_external(char *args[])
     }
 }
 
+void execute_pipe(char *args[], int pipe_index)
+{
+    int fd[2];
+
+    if (pipe(fd) == -1)
+    {
+        perror("MiniShell");
+        return;
+    }
+
+    pid_t pid1 = fork();
+
+    if (pid1 < 0)
+    {
+        perror("MiniShell");
+        return;
+    }
+
+    if (pid1 == 0)
+    {
+        dup2(fd[1], STDOUT_FILENO);
+
+        close(fd[0]);
+        close(fd[1]);
+
+        execvp(args[0], args);
+
+        perror("MiniShell");
+        _exit(1);
+    }
+
+    pid_t pid2 = fork();
+
+    if (pid2 < 0)
+    {
+        perror("MiniShell");
+        return;
+    }
+
+    if (pid2 == 0)
+    {
+        dup2(fd[0], STDIN_FILENO);
+
+        close(fd[0]);
+        close(fd[1]);
+
+        execvp(args[pipe_index + 1], &args[pipe_index + 1]);
+
+        perror("MiniShell");
+        _exit(1);
+    }
+
+    close(fd[0]);
+    close(fd[1]);
+
+    waitpid(pid1, NULL, 0);
+    waitpid(pid2, NULL, 0);
+}
+
 
 int main(void)
 {
@@ -250,6 +309,19 @@ int main(void)
 
         parse_command(input, args);
 
+        int pipe_index = -1;
+
+       for (int i = 0; args[i] != NULL; i++)
+        {
+          if (strcmp(args[i], "|") == 0)
+           {
+            pipe_index = i;
+             args[i] = NULL;
+             break;
+            }
+         }
+
+
         if (args[0] == NULL)
             continue;
          if (strcmp(args[0], "exit") == 0)
@@ -266,7 +338,14 @@ int main(void)
         }
         else
         {
-            execute_external(args);
+           if (pipe_index != -1)
+           {
+               execute_pipe(args, pipe_index);
+            }
+            else
+            {
+                 execute_external(args);
+             }
         }
     }
 
