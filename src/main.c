@@ -100,7 +100,7 @@ void handle_cat(char *args[])
 }
 
 
-void handle_redirection(char *args[], char **input_file, char **output_file)
+int handle_redirection(char *args[], char **input_file, char **output_file)
 {
     int i = 0;
 
@@ -114,7 +114,7 @@ void handle_redirection(char *args[], char **input_file, char **output_file)
             if (args[i + 1] == NULL)
             {
                 printf("MiniShell: output file missing\n");
-                _exit(1);
+                return 0 ;
             }
 
             *output_file = args[i + 1];
@@ -124,7 +124,7 @@ void handle_redirection(char *args[], char **input_file, char **output_file)
             if (args[i + 1] == NULL)
             {
                 printf("MiniShell: input file missing\n");
-                _exit(1);
+                return 0;
             }
 
             *input_file = args[i + 1];
@@ -132,6 +132,7 @@ void handle_redirection(char *args[], char **input_file, char **output_file)
 
         i++;
     }
+    return 1;
 }
 
 void execute_external(char *args[])
@@ -141,8 +142,8 @@ void execute_external(char *args[])
 
     char *clean_args[MAX_ARGS];
 
-    handle_redirection(args, &input_file, &output_file);
-
+    if (!handle_redirection(args, &input_file, &output_file))
+       return;
     int i = 0;
     int count = 0;
 
