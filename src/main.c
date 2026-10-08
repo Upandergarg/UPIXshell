@@ -160,6 +160,8 @@ void execute_external(char *args[])
         }
     }
 
+    clean_args[count] = NULL;
+    
     if (clean_args[0] == NULL)
     {
     printf("MiniShell: command missing\n");
