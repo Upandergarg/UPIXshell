@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <signal.h>
+
 
 #define MAX_INPUT 100
 #define MAX_ARGS 10
@@ -98,7 +100,6 @@ void handle_cat(char *args[])
 }
 
 
-
 void handle_redirection(char *args[], char **input_file, char **output_file)
 {
     int i = 0;
@@ -160,10 +161,10 @@ void execute_external(char *args[])
     }
 
     if (clean_args[0] == NULL)
-{
+    {
     printf("MiniShell: command missing\n");
     return;
-}
+    }
 
     pid_t pid = fork();
 
@@ -288,11 +289,22 @@ void execute_pipe(char *args[], int pipe_index)
     waitpid(pid2, NULL, 0);
 }
 
+void handle_signal(int signal)
+{
+    if (signal == SIGINT)
+    {
+        printf("\nMiniShell$ ");
+        fflush(stdout);
+    }
+}
+
 
 int main(void)
 {
     char input[MAX_INPUT];
     char *args[MAX_ARGS];
+
+    signal(SIGINT, handle_signal);
 
     printf("==============================\n");
     printf("          MiniShell\n");
